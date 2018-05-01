@@ -1,0 +1,8 @@
+This kernel module implements a zone allocator via syscalls.
+
+compile: make
+load: cp to /boot/modules/ and kldload zoneallocator.ko
+
+Test.c doesn't handle errors if enough parameters aren't given
+
+compile test.c: gcc -o test test.c
