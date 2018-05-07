@@ -1,4 +1,3 @@
-
 #include "allocation.h"
 static char memory[MEM_SIZE];
 
