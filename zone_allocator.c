@@ -25,7 +25,7 @@
 
 //#define MIN(X,Y) ((X) < (Y) ? (X) : (Y))
 #define max_block_count(page) ((int)(PAGE_SIZE1 / page->block_size))
-#define is_big_block(page) (page->block_size >= PAGE_SIZE1)
+#define is_large_block(page) (page->block_size >= PAGE_SIZE1)
 #define is_remote_descriptor(size) (size < sizeof(page_type) || size > sizeof(page_type) * 3)
 #define MEM_SIZE 65535
 
@@ -58,8 +58,8 @@ void *mem_alloc(size_t);
 page_type *create_page(size_t);
 char *get_page_offset(int);
 int get_page_num(void *);
-void *mem_alloc_big(size_t);
-void mem_free_big(void *);
+void *mem_alloc_large(size_t);
+void mem_free_large(void *);
 size_t round_to_4(size_t);
 int log_2(int);
 
@@ -106,7 +106,7 @@ void *mem_alloc(size_t size)
 
     if(real_size > PAGE_SIZE1 / 2)
     {
-        return mem_alloc_big(real_size);
+        return mem_alloc_large(real_size);
     }
 
     page_type *page = *(FREE_TABLE + free_id);
@@ -140,7 +140,7 @@ void *mem_alloc(size_t size)
 
 
 
-void *mem_alloc_big(size_t size)
+void *mem_alloc_large(size_t size)
 {
     int page_count = size / PAGE_SIZE1;
 
@@ -186,9 +186,9 @@ void mem_free(void *addr)
 {
     int page_num = get_page_num(addr);
     page_type *page = *(PAGE_TABLE + page_num);
-    if(is_big_block(page))
+    if(is_large_block(page))
     {
-        mem_free_big(addr);
+        mem_free_large(addr);
         return;
     }
     free_block_type *new_free_block = (free_block_type *) addr;
@@ -259,7 +259,7 @@ void mem_free(void *addr)
 }
 
 
-void mem_free_big(void *addr)
+void mem_free_large(void *addr)
 {
     int page_num = get_page_num(addr);
     page_type *page = *(PAGE_TABLE + page_num);
